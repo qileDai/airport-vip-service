@@ -1,0 +1,8 @@
+Airport VIP Lounge Reservation Rights Verification Service
+Copyright (c) 2024
+
+This software is provided under the MIT License.
+
+Third-party libraries used:
+- Echo Web Framework (MIT License)
+- SQLite3 Driver (MIT License)

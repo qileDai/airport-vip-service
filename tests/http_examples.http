@@ -1,0 +1,394 @@
+### 机场贵宾厅预约权益核验批量对账与审计服务 - API 测试示例
+### 基础URL: http://localhost:8080/api/v1
+
+### ========================================
+### 健康检查
+### ========================================
+
+### 健康检查
+GET http://localhost:8080/api/v1/health
+
+### ========================================
+### 会员权益 API
+### ========================================
+
+### 获取会员权益列表
+GET http://localhost:8080/api/v1/member-benefits?page=1&per_page=10
+
+### 获取会员权益列表 - 按状态筛选
+GET http://localhost:8080/api/v1/member-benefits?status=active&page=1&per_page=10
+
+### 获取会员权益列表 - 按会员等级筛选
+GET http://localhost:8080/api/v1/member-benefits?member_level=platinum&page=1&per_page=10
+
+### 获取单个会员权益
+GET http://localhost:8080/api/v1/member-benefits/1
+
+### 创建会员权益
+POST http://localhost:8080/api/v1/member-benefits
+Content-Type: application/json
+
+{
+  "member_name": "测试会员张三",
+  "member_level": "gold",
+  "remaining_quota": 8,
+  "total_quota": 10,
+  "valid_from": "2024-01-01",
+  "valid_to": "2024-12-31",
+  "responsible_person": "李运营",
+  "batch_no": "BATCH-2024-TEST"
+}
+
+### 更新会员权益
+PUT http://localhost:8080/api/v1/member-benefits/1
+Content-Type: application/json
+
+{
+  "remaining_quota": 7,
+  "remarks": "使用了一次权益"
+}
+
+### 删除会员权益
+DELETE http://localhost:8080/api/v1/member-benefits/11
+
+### 检查权益过期
+POST http://localhost:8080/api/v1/member-benefits/check-expiry
+Content-Type: application/json
+
+{}
+
+### ========================================
+### 预约记录 API
+### ========================================
+
+### 获取预约记录列表
+GET http://localhost:8080/api/v1/reservations?page=1&per_page=10
+
+### 获取预约记录列表 - 按状态筛选
+GET http://localhost:8080/api/v1/reservations?status=confirmed&page=1&per_page=10
+
+### 获取单个预约记录
+GET http://localhost:8080/api/v1/reservations/1
+
+### 创建预约记录
+POST http://localhost:8080/api/v1/reservations
+Content-Type: application/json
+
+{
+  "member_benefit_id": 1,
+  "member_name": "张明远",
+  "flight_no": "CA1234",
+  "flight_schedule_id": 1,
+  "vip_lounge_name": "首都机场VIP厅A区",
+  "reservation_time": "2024-06-20T10:00:00Z",
+  "guest_count": 2,
+  "responsible_person": "服务台小李",
+  "batch_no": "RSV-BATCH-TEST"
+}
+
+### 更新预约记录
+PUT http://localhost:8080/api/v1/reservations/1
+Content-Type: application/json
+
+{
+  "guest_count": 3,
+  "remarks": "增加一位同行人"
+}
+
+### 删除预约记录
+DELETE http://localhost:8080/api/v1/reservations/11
+
+### 批量导入预检
+POST http://localhost:8080/api/v1/reservations/batch-import/preview
+Content-Type: application/json
+
+{
+  "reservations": [
+    {
+      "member_benefit_id": 1,
+      "member_name": "批量测试会员1",
+      "flight_no": "CA1234",
+      "flight_schedule_id": 1,
+      "vip_lounge_name": "首都机场VIP厅A区",
+      "reservation_time": "2024-06-20T10:00:00Z",
+      "guest_count": 1,
+      "responsible_person": "服务台小李"
+    },
+    {
+      "member_benefit_id": 2,
+      "member_name": "批量测试会员2",
+      "flight_no": "MU5678",
+      "flight_schedule_id": 2,
+      "vip_lounge_name": "浦东机场VIP厅B区",
+      "reservation_time": "2024-06-20T11:00:00Z",
+      "guest_count": 2,
+      "responsible_person": "服务台小王"
+    }
+  ],
+  "batch_no": "BATCH-IMPORT-TEST-001"
+}
+
+### 执行批量导入
+POST http://localhost:8080/api/v1/reservations/batch-import
+Content-Type: application/json
+
+{
+  "reservations": [
+    {
+      "member_benefit_id": 1,
+      "member_name": "批量导入会员1",
+      "flight_no": "CA1234",
+      "flight_schedule_id": 1,
+      "vip_lounge_name": "首都机场VIP厅A区",
+      "reservation_time": "2024-06-20T10:00:00Z",
+      "guest_count": 1,
+      "responsible_person": "服务台小李"
+    }
+  ],
+  "batch_no": "BATCH-IMPORT-EXEC-001"
+}
+
+### 状态流转 - 提交审核
+POST http://localhost:8080/api/v1/reservations/1/status
+Content-Type: application/json
+
+{
+  "action": "submit",
+  "operator": "服务台小李",
+  "remarks": "提交审核"
+}
+
+### 状态流转 - 审核通过
+POST http://localhost:8080/api/v1/reservations/1/status
+Content-Type: application/json
+
+{
+  "action": "approve",
+  "operator": "审核员甲",
+  "remarks": "审核通过"
+}
+
+### 状态流转 - 驳回（必须填写原因）
+POST http://localhost:8080/api/v1/reservations/1/status
+Content-Type: application/json
+
+{
+  "action": "reject",
+  "operator": "审核员乙",
+  "reason": "同行人数量超限",
+  "remarks": "请减少同行人数量"
+}
+
+### 获取允许的状态流转
+GET http://localhost:8080/api/v1/reservations/1/transitions
+
+### ========================================
+### 航班时段 API
+### ========================================
+
+### 获取航班时段列表
+GET http://localhost:8080/api/v1/flight-schedules?page=1&per_page=10
+
+### 获取单个航班时段
+GET http://localhost:8080/api/v1/flight-schedules/1
+
+### 创建航班时段
+POST http://localhost:8080/api/v1/flight-schedules
+Content-Type: application/json
+
+{
+  "flight_no": "CA9999",
+  "departure_airport": "北京首都T3",
+  "arrival_airport": "深圳宝安T3",
+  "scheduled_depart": "2024-06-20T08:00:00Z",
+  "scheduled_arrive": "2024-06-20T11:00:00Z",
+  "flight_status": "scheduled",
+  "vip_lounge_capacity": 50,
+  "responsible_person": "调度员张三",
+  "batch_no": "FLT-BATCH-TEST"
+}
+
+### 更新航班时段
+PUT http://localhost:8080/api/v1/flight-schedules/1
+Content-Type: application/json
+
+{
+  "flight_status": "boarding",
+  "remarks": "开始登机"
+}
+
+### 归档航班时段
+POST http://localhost:8080/api/v1/flight-schedules/1/archive
+Content-Type: application/json
+
+{}
+
+### 批量归档航班时段
+POST http://localhost:8080/api/v1/flight-schedules/batch-archive
+Content-Type: application/json
+
+{
+  "flight_schedule_ids": [1, 2, 3],
+  "operator": "调度员李四"
+}
+
+### ========================================
+### 候补名单 API
+### ========================================
+
+### 获取候补名单列表
+GET http://localhost:8080/api/v1/waitlist?page=1&per_page=10
+
+### 获取候补名单 - 按航班筛选
+GET http://localhost:8080/api/v1/waitlist?flight_schedule_id=1&page=1&per_page=10
+
+### 获取单个候补记录
+GET http://localhost:8080/api/v1/waitlist/1
+
+### 创建候补记录
+POST http://localhost:8080/api/v1/waitlist
+Content-Type: application/json
+
+{
+  "member_benefit_id": 1,
+  "flight_schedule_id": 1,
+  "member_name": "候补测试会员",
+  "member_level": "gold",
+  "responsible_person": "调度员张三",
+  "batch_no": "WTL-BATCH-TEST"
+}
+
+### 计算入场优先级
+POST http://localhost:8080/api/v1/waitlist/calculate-priority
+Content-Type: application/json
+
+{
+  "member_level": "platinum",
+  "remaining_quota": 15,
+  "waiting_minutes": 45
+}
+
+### 安排候补入场
+POST http://localhost:8080/api/v1/waitlist/arrange
+Content-Type: application/json
+
+{
+  "flight_schedule_id": 1,
+  "available_seats": 2,
+  "operator": "调度员李四"
+}
+
+### ========================================
+### 核验结果 API
+### ========================================
+
+### 获取核验结果列表
+GET http://localhost:8080/api/v1/verifications?page=1&per_page=10
+
+### 获取单个核验结果
+GET http://localhost:8080/api/v1/verifications/1
+
+### 创建核验结果
+POST http://localhost:8080/api/v1/verifications
+Content-Type: application/json
+
+{
+  "reservation_id": 1,
+  "member_benefit_id": 1,
+  "flight_schedule_id": 1,
+  "verification_type": "reservation",
+  "result": "passed",
+  "verified_quota": 2,
+  "verified_companions": 1,
+  "responsible_person": "核验员甲",
+  "batch_no": "VER-BATCH-TEST"
+}
+
+### 核验权益资格
+POST http://localhost:8080/api/v1/verifications/verify-eligibility
+Content-Type: application/json
+
+{
+  "member_benefit_id": 1,
+  "flight_schedule_id": 1,
+  "guest_count": 2,
+  "operator": "核验员甲"
+}
+
+### ========================================
+### 异常事件 API
+### ========================================
+
+### 获取异常事件列表
+GET http://localhost:8080/api/v1/exceptions?page=1&per_page=10
+
+### 获取异常事件 - 按状态筛选
+GET http://localhost:8080/api/v1/exceptions?status=open&page=1&per_page=10
+
+### 获取单个异常事件
+GET http://localhost:8080/api/v1/exceptions/1
+
+### 创建异常事件
+POST http://localhost:8080/api/v1/exceptions
+Content-Type: application/json
+
+{
+  "event_type": "quota_exceeded",
+  "entity_type": "member_benefit",
+  "entity_id": 1,
+  "trigger_field": "remaining_quota",
+  "threshold_value": "1",
+  "actual_value": "0",
+  "severity": "medium",
+  "responsible_person": "李运营",
+  "batch_no": "EVT-BATCH-TEST"
+}
+
+### 处理异常事件
+POST http://localhost:8080/api/v1/exceptions/handle
+Content-Type: application/json
+
+{
+  "event_id": 1,
+  "handler": "李运营",
+  "handling_result": "已补充配额",
+  "remarks": "紧急处理完成"
+}
+
+### 获取待处理异常事件
+GET http://localhost:8080/api/v1/exceptions/open
+
+### ========================================
+### 审计日志 API
+### ========================================
+
+### 获取审计日志列表
+GET http://localhost:8080/api/v1/audit-logs?page=1&per_page=10
+
+### 获取审计日志 - 按实体类型筛选
+GET http://localhost:8080/api/v1/audit-logs?entity_type=reservation&page=1&per_page=10
+
+### 获取单个审计日志
+GET http://localhost:8080/api/v1/audit-logs/1
+
+### 获取实体相关的审计日志
+GET http://localhost:8080/api/v1/audit-logs/entity/reservation/1
+
+### ========================================
+### 统计 API
+### ========================================
+
+### 获取核验通过率统计
+GET http://localhost:8080/api/v1/statistics/verification?start_date=2024-01-01&end_date=2024-12-31
+
+### 获取候补转入率统计
+GET http://localhost:8080/api/v1/statistics/waitlist?start_date=2024-01-01&end_date=2024-12-31
+
+### 获取入场使用率统计
+GET http://localhost:8080/api/v1/statistics/usage?start_date=2024-01-01&end_date=2024-12-31
+
+### 获取统计 - 按批次筛选
+GET http://localhost:8080/api/v1/statistics/verification?batch_no=BATCH-2024-001
+
+### 获取统计 - 按角色筛选
+GET http://localhost:8080/api/v1/statistics/verification?role=核验员甲
