@@ -41,19 +41,21 @@ type AuditLogResponse struct {
 }
 
 type AuditLogListResponse struct {
-	Total int                  `json:"total"`
-	Page  int                  `json:"page"`
-	Size  int                  `json:"size"`
-	Data  []*AuditLogResponse  `json:"data"`
+	Total   int64              `json:"total"`
+	Page    int                `json:"page"`
+	PerPage int                `json:"per_page"`
+	Data    []AuditLogResponse `json:"data"`
 }
 
 type AuditLogQueryRequest struct {
-	Page           int    `json:"page"`
-	PerPage        int    `json:"per_page"`
-	EntityType     string `json:"entity_type"`
-	EntityID       int64  `json:"entity_id"`
-	OperationType  string `json:"operation_type"`
-	Operator       string `json:"operator"`
-	StartDate      string `json:"start_date"`
-	EndDate        string `json:"end_date"`
+	Page          int        `json:"page"`
+	PerPage       int        `json:"per_page"`
+	EntityType    string     `json:"entity_type"`
+	EntityID      int64      `json:"entity_id"`
+	OperationType string     `json:"operation_type"`
+	Operator      string     `json:"operator"`
+	StartDate     string     `json:"start_date"`
+	EndDate       string     `json:"end_date"`
+	StartTime     *time.Time `json:"start_time"`
+	EndTime       *time.Time `json:"end_time"`
 }
