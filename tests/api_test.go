@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/labstack/echo/v4"
 )
 
